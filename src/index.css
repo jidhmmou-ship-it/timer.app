@@ -1,0 +1,470 @@
+@import "tailwindcss";
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+:root {
+  --drop-shadow-inner: 10px 10px 10px 10px rgba(0, 0, 0, 0.158);
+  --drop-shadow-outer: 10px 10px 20px rgba(0, 0, 0, 0.466);
+  --drop-shadow-highlight: -10px -10px 10px 10px rgba(255, 255, 255, 0.897);
+  --drop-tint-filter: none;
+}
+
+[data-hue="ocean"] {
+  --drop-shadow-inner: 10px 10px 12px 10px rgba(12, 74, 110, 0.28);
+  --drop-shadow-outer: 10px 10px 22px rgba(14, 116, 144, 0.42);
+  --drop-shadow-highlight: -10px -10px 12px 10px rgba(224, 242, 254, 0.95);
+  --drop-tint-filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.25));
+}
+
+[data-hue="sunset"] {
+  --drop-shadow-inner: 10px 10px 12px 10px rgba(194, 65, 12, 0.24);
+  --drop-shadow-outer: 10px 10px 22px rgba(234, 88, 12, 0.38);
+  --drop-shadow-highlight: -10px -10px 12px 10px rgba(255, 237, 213, 0.95);
+  --drop-tint-filter: drop-shadow(0 0 16px rgba(251, 146, 60, 0.25));
+}
+
+/* 1:1 Water Droplet App Window */
+.card {
+  width: 220px;
+  height: 220px;
+  aspect-ratio: 1 / 1;
+  background-color: transparent;
+  box-shadow: inset var(--drop-shadow-inner),
+    var(--drop-shadow-outer),
+    inset var(--drop-shadow-highlight);
+  filter: var(--drop-tint-filter);
+  border-radius: 51% 49% 62% 38% / 25% 57% 43% 75%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  touch-action: none;
+  cursor: grab;
+  will-change: transform, border-radius, opacity;
+  transform-origin: center center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: filter 0.4s ease, box-shadow 0.4s ease;
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.card::after {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.842);
+  border-radius: 80% 20% 91% 9% / 48% 67% 33% 52%;
+  top: 42px;
+  left: 42px;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.card::before {
+  content: "";
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.842);
+  border-radius: 48% 52% 45% 55% / 48% 67% 33% 52%;
+  top: 36px;
+  left: 64px;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Water Taskbar (Static without dynamics, shares same water aesthetic) */
+.water-taskbar {
+  background-color: transparent;
+  box-shadow: inset 6px 6px 8px rgba(0, 0, 0, 0.12),
+    0 12px 28px rgba(0, 0, 0, 0.18),
+    inset -6px -6px 8px rgba(255, 255, 255, 0.95);
+  border-radius: 40px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 8px 18px;
+  gap: 16px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Draggable Water Widget Container */
+.draggable-widget {
+  position: absolute;
+  z-index: 40;
+  touch-action: none;
+  cursor: grab;
+  will-change: transform;
+}
+
+.draggable-widget:active {
+  cursor: grabbing;
+}
+
+/* Water modal styling */
+.water-modal {
+  background-color: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: inset 5px 5px 7px rgba(0, 0, 0, 0.08),
+    0 16px 36px rgba(0, 0, 0, 0.18),
+    inset -5px -5px 7px rgba(255, 255, 255, 0.95);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+/* Pomodoro Water Button in Taskbar */
+.pomodoro-pill-btn {
+  background-color: transparent;
+  box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.12),
+    2px 3px 8px rgba(0, 0, 0, 0.14),
+    inset -3px -3px 5px rgba(255, 255, 255, 0.92);
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: rgba(0, 0, 0, 0.72);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.pomodoro-pill-btn:hover {
+  transform: scale(1.05);
+  color: rgba(0, 0, 0, 0.9);
+  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.14),
+    3px 4px 12px rgba(0, 0, 0, 0.18),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.95);
+}
+
+.pomodoro-pill-btn:active {
+  transform: scale(0.96);
+}
+
+.pomodoro-pill-btn.active {
+  box-shadow: inset 3px 3px 5px rgba(14, 116, 144, 0.28),
+    2px 3px 10px rgba(6, 182, 212, 0.22),
+    inset -3px -3px 5px rgba(255, 255, 255, 0.95);
+  color: rgb(14, 116, 144);
+}
+
+/* ── Water Droplet Popup Expand / Collapse Animations ── */
+@keyframes waterDropExpand {
+  0% {
+    opacity: 0;
+    transform: scale(0.25) translateY(20px);
+    border-radius: 50%;
+    filter: blur(5px);
+  }
+  35% {
+    opacity: 0.6;
+    transform: scale(0.72) translateY(4px);
+    border-radius: 46% 54% 50% 50% / 40% 60% 40% 60%;
+    filter: blur(1px);
+  }
+  65% {
+    opacity: 0.94;
+    transform: scale(1.04) translateY(-2px);
+    border-radius: 30px;
+    filter: blur(0px);
+  }
+  82% {
+    transform: scale(0.98) translateY(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0px);
+    border-radius: 28px;
+    filter: blur(0px);
+  }
+}
+
+/* ── Water-Drop Modal (glassmorphic liquid Bubble UI) ── */
+.water-modal {
+  background: radial-gradient(130% 130% at 20% 15%, rgba(255, 255, 255, 0.94) 0%, rgba(240, 248, 255, 0.85) 60%, rgba(225, 240, 255, 0.8) 100%);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  box-shadow:
+    inset 6px 6px 12px rgba(255, 255, 255, 0.95),
+    inset -6px -6px 14px rgba(0, 0, 0, 0.08),
+    0 24px 48px -8px rgba(0, 30, 60, 0.2),
+    0 8px 16px -4px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.85);
+  border-radius: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  animation: waterDropExpand 0.44s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transform-origin: bottom center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Fluid Bubble gloss / refraction highlights */
+.water-modal::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 32px;
+  width: 52px;
+  height: 8px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.4));
+  border-radius: 20px;
+  pointer-events: none;
+  filter: blur(0.5px);
+}
+
+.water-modal::after {
+  content: "";
+  position: absolute;
+  top: 12px;
+  left: 94px;
+  width: 14px;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(0.5px);
+}
+
+/* Clock-Date capsule in the taskbar */
+.clock-date-capsule {
+  background-color: transparent;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.08),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+}
+
+/* Water glares on taskbar edge */
+.water-taskbar::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 24px;
+  width: 48px;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+.water-taskbar::after {
+  content: "";
+  position: absolute;
+  top: 7px;
+  left: 82px;
+  width: 16px;
+  height: 5px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+/* Taskbar Droplet Bead Icon */
+.taskbar-bead {
+  width: 46px;
+  height: 46px;
+  background-color: transparent;
+  box-shadow: inset 4px 4px 5px rgba(0, 0, 0, 0.14),
+    3px 4px 10px rgba(0, 0, 0, 0.22),
+    inset -4px -4px 5px rgba(255, 255, 255, 0.95);
+  border-radius: 51% 49% 62% 38% / 35% 57% 43% 65%;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.taskbar-bead:hover {
+  transform: scale(1.08);
+}
+
+.taskbar-bead:active {
+  transform: scale(0.94);
+}
+
+.taskbar-bead::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  width: 6px;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.92);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.taskbar-bead::after {
+  content: "";
+  position: absolute;
+  top: 11px;
+  left: 7px;
+  width: 3px;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Second subtle utility bead on taskbar */
+.taskbar-bead-secondary {
+  width: 36px;
+  height: 36px;
+  background-color: transparent;
+  box-shadow: inset 3px 3px 4px rgba(0, 0, 0, 0.12),
+    2px 3px 8px rgba(0, 0, 0, 0.16),
+    inset -3px -3px 4px rgba(255, 255, 255, 0.9);
+  border-radius: 48% 52% 55% 45% / 45% 55% 45% 55%;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.taskbar-bead-secondary:hover {
+  transform: scale(1.06);
+}
+
+.taskbar-bead-secondary::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 9px;
+  width: 4px;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Minimize liquid bead inside the 1:1 window */
+.minimize-bead {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: transparent;
+  box-shadow: inset 2px 2px 3px rgba(0, 0, 0, 0.12),
+    1px 2px 4px rgba(0, 0, 0, 0.18),
+    inset -2px -2px 3px rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  z-index: 30;
+}
+
+.minimize-bead:hover {
+  transform: scale(1.18);
+}
+
+/* Water surface ripple animation on droplet collision or tap */
+@keyframes waterSurfaceRipple {
+  0% {
+    transform: translate(-50%, -50%) scale(0.18);
+    opacity: 0.82;
+    border-width: 2.5px;
+  }
+  30% {
+    opacity: 0.65;
+  }
+  70% {
+    opacity: 0.35;
+    border-width: 1.5px;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(5.2);
+    opacity: 0;
+    border-width: 0.5px;
+  }
+}
+
+.water-surface-ripple {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8),
+    inset 0 0 5px rgba(0, 0, 0, 0.1),
+    0 0 3px rgba(0, 0, 0, 0.14);
+  will-change: transform, opacity;
+  animation: waterSurfaceRipple 0.85s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  z-index: 15;
+}
+
+/* Water Droplet Slider Styling */
+.water-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 72px;
+  height: 6px;
+  background: transparent;
+  border-radius: 9999px;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.16), inset -1px -1px 2px rgba(255, 255, 255, 0.9);
+  outline: none;
+  cursor: pointer;
+}
+
+.water-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: inset 2px 2px 3px rgba(0, 0, 0, 0.16),
+    1px 2px 4px rgba(0, 0, 0, 0.22),
+    inset -2px -2px 3px rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.water-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.water-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  box-shadow: inset 2px 2px 3px rgba(0, 0, 0, 0.16),
+    1px 2px 4px rgba(0, 0, 0, 0.22),
+    inset -2px -2px 3px rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+}
+
